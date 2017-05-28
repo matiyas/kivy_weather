@@ -32,6 +32,7 @@ def weather_json(woeid):
 class CurrentWeather(AccordionItem):
     def __init__(self):
         super(CurrentWeather, self).__init__()
+        self.title = "Current weather"
         self.main_box = BoxLayout(orientation="vertical")
         self.time_bar = BoxLayout(orientation="horizontal")
         self.date_box = BoxLayout(orientation="vertical")
@@ -59,6 +60,7 @@ class CurrentWeather(AccordionItem):
 class Forecast(AccordionItem):
     def __init__(self):
         super(Forecast, self).__init__()
+        self.title = "5 days forecast"
         self.main_box = BoxLayout(orientation="vertical")
         self.day_box = [BoxLayout(orientation="horizontal") for _ in xrange(5)]
         self.date_label = [Label(markup=True) for _ in xrange(5)]
@@ -101,14 +103,18 @@ class GUI(Accordion):
                                                                                  weather["forecast"][0]["high"])
         soup = BeautifulSoup(weather["description"])
         src = BeautifulSoup(soup.findAll(text=True)[0]).find("img")["src"]
-        urllib.urlretrieve(src, "weather.gif")
-        self.current.weather_image.source = "weather.gif"
+        print src.split('/')[-1]
+        urllib.urlretrieve(src, src.split('/')[-1])
+        self.current.weather_image.source = src.split('/')[-1]
         self.current.weather_image.reload()
 
         for i in xrange(5):
-            self.forecast.weather_image[i].source = "weather.gif"
+            name = weather["forecast"][i + 1]["code"] + ".gif"
+            urllib.urlretrieve("/".join(src.split('/')[0:-1]) + '/' + name, name)
+            
+            self.forecast.day_label[i].text = "[size=20][b]{}[/b]".format(weather["forecast"][i + 1]["day"])
             self.forecast.date_label[i].text = weather["forecast"][i + 1]["date"]
-            self.forecast.day_label[i].text = weather["forecast"][i + 1]["day"]
+            self.forecast.weather_image[i].source = name
             self.forecast.extreme_temp[i].text = u"Max: {}\u00b0\nMin: {}\u00b0".format(weather["forecast"][i + 1]["high"],
                                                                                         weather["forecast"][i + 1]["low"])
 
