@@ -11,10 +11,9 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.accordion import Accordion
-from kivy.uix.accordion import AccordionItem
-from kivy.uix.floatlayout import FloatLayout
 from BeautifulSoup import BeautifulSoup
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.accordion import Accordion, AccordionItem
 
 
 def weather_json(woeid):
@@ -126,10 +125,12 @@ class GUI(Accordion):
                                                u"Max. temp.:    {}\u00b0".format(weather["forecast"][0]["low"],
                                                                                  weather["forecast"][0]["high"])
                                                                                  
-        # Wyciąganie informacji z CDATA
+        # Wyciąganie informacji o obrazku z CDATA
         soup = BeautifulSoup(weather["description"])
         src = BeautifulSoup(soup.findAll(text=True)[0]).find("img")["src"]
         urllib.urlretrieve(src, src.split('/')[-1])
+        
+        # Aktualizacja obrazka pogody
         self.current.weather_image.source = src.split('/')[-1]
         self.current.weather_image.reload()
 
