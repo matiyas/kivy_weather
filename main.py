@@ -18,13 +18,13 @@ from kivy.uix.accordion import Accordion, AccordionItem
 
 def weather_json(woeid):
     """Metoda pobierająca prognozę pogody z serwisu Yahoo!
-		
-	Argumenty:
-		woeid:	Id lokalizacji dla której ma zostać pobrana pogoda.
-			
-	Zwraca:
-		Słownik zawierający informacje o pogodzie.
-	"""
+
+    Argumenty:
+        woeid:	Id lokalizacji dla której ma zostać pobrana pogoda.
+
+    Zwraca:
+        Słownik zawierający informacje o pogodzie.
+    """
     baseurl = "https://query.yahooapis.com/v1/public/yql?"
     yql_query = "select * from weather.forecast where woeid={} and u='c'".format(woeid)
     yql_url = baseurl + urllib.urlencode({'q': yql_query}) + "&format=json"
@@ -35,13 +35,13 @@ def weather_json(woeid):
 
 
 class CurrentWeather(AccordionItem):
-	"""Klasa reprezentująca stronę przedstawiającą aktualną pogodę."""
+    """Klasa reprezentująca stronę przedstawiającą aktualną pogodę."""
     def __init__(self):
-		"""Metoda umieszczająca widgety na stronie
-		
-			Na stronie umieszczane są etykiety przedstawiające: aktualną godzinę, datę, nazwę dnia tygodnia, obrazek przedstawiający pogodę,
-			aktualną temperaturę, oraz minimalną i maksymalną temperaturę.
-		"""
+        """Metoda umieszczająca widgety na stronie
+
+        Na stronie umieszczane są etykiety przedstawiające: aktualną godzinę, datę, nazwę dnia tygodnia, obrazek przedstawiający pogodę,
+        aktualną temperaturę, oraz minimalną i maksymalną temperaturę.
+        """
         super(CurrentWeather, self).__init__()
         self.title = "Current weather"
         self.main_box = BoxLayout(orientation="vertical")
@@ -54,7 +54,7 @@ class CurrentWeather(AccordionItem):
         self.weather_image = Image(markup=True, pos_hint={'x': -.2, 'y': .2})
         self.extreme_temp_label = Label(markup=True)
 
-		# Pakowanie widgetów
+        # Pakowanie widgetów
         self.time_bar.add_widget(self.hour_label)
         self.time_bar.add_widget(self.date_box)
         self.date_box.add_widget(self.date_label)
@@ -70,13 +70,13 @@ class CurrentWeather(AccordionItem):
         
 
 class Forecast(AccordionItem):
-	"""Klasa reprezentująca stronę przedstawiającą prognozę pogody na 5 dni."""
+    """Klasa reprezentująca stronę przedstawiającą prognozę pogody na 5 dni."""
     def __init__(self):
-		"""Metoda umieszczająca widgety na stronie
-		
-		Na stronie umieszczane są etykiety przedstawiające: datę, nazwę dnia tygodnia, obrazek przedstawiający pogodę, aktualną temperaturę,
-		oraz minimalną i maksymalną temperaturę dla każdego z 5 dni.
-		"""
+        """Metoda umieszczająca widgety na stronie
+
+        Na stronie umieszczane są etykiety przedstawiające: datę, nazwę dnia tygodnia, obrazek przedstawiający pogodę, aktualną temperaturę,
+        oraz minimalną i maksymalną temperaturę dla każdego z 5 dni.
+        """
         super(Forecast, self).__init__()
         self.title = "5 days forecast"
         self.main_box = BoxLayout(orientation="vertical")
@@ -86,7 +86,7 @@ class Forecast(AccordionItem):
         self.weather_image = [Image() for _ in xrange(5)]
         self.extreme_temp = [Label(markup=True) for _ in xrange(5)]
 
-		# Pakowanie widgetów
+        # Pakowanie widgetów
         for i in xrange(5):
             self.day_box[i].add_widget(self.day_label[i])
             self.day_box[i].add_widget(self.date_label[i])
@@ -98,10 +98,11 @@ class Forecast(AccordionItem):
 
 
 class GUI(Accordion):
-	"""Klasa reprezentująca graficzny interfejs użytkownika aplikacji."""
+    """Klasa reprezentująca graficzny interfejs użytkownika aplikacji."""
     def __init__(self):
-		"""Metoda tworzy i aktualizuje obiekty klas CurrentWeather i Forecast."""
+        """Metoda tworzy i aktualizuje obiekty klas CurrentWeather i Forecast."""
         super(GUI, self).__init__()
+        self.orientation = "vertical"
         self.current = CurrentWeather()
         self.forecast = Forecast()
 
@@ -111,12 +112,12 @@ class GUI(Accordion):
         self.weather_update()
 
     def weather_update(self):
-		"""Metoda aktualizują informacje o pogodzie."""
+        """Metoda aktualizują informacje o pogodzie."""
         json_data = weather_json("522678")
         weather = json_data["query"]["results"]["channel"]["item"]
         time = json_data["query"]["created"]
 
-		# Aktualizacja pogody dla bieżącego dnia
+        # Aktualizacja pogody dla bieżącego dnia
         self.current.hour_label.text = "[size=40][b]{}[/b]".format(str(int(time[11:13]) + 2) + time[13:16])
         self.current.date_label.text = "   [size=35]{}\n[size=15]{}".format(weather["condition"]["date"].split()[0][:-1],
                                                                             " ".join(weather["condition"]["date"].split()[1:4]))
@@ -134,7 +135,7 @@ class GUI(Accordion):
         self.current.weather_image.source = src.split('/')[-1]
         self.current.weather_image.reload()
 
-		# Aktualizacja pogody dla 5-dniowej prognozy
+        # Aktualizacja pogody dla 5-dniowej prognozy
         for i in xrange(5):
             name = weather["forecast"][i + 1]["code"] + ".gif"
             urllib.urlretrieve("/".join(src.split('/')[0:-1]) + '/' + name, name)
@@ -147,9 +148,9 @@ class GUI(Accordion):
 
 
 class Application(App):
-	"""Główna klasa aplikacji."""
+    """Główna klasa aplikacji."""
     def build(self):
-		"""Nadpisanie metody, powodujące wyświetlenie układu GUI na głównym oknie aplikacji."""
+        """Nadpisanie metody, powodujące wyświetlenie układu GUI na głównym oknie aplikacji."""
         return GUI()
 
 if __name__ == "__main__":
