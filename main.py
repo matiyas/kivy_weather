@@ -78,7 +78,7 @@ class Forecast(AccordionItem):
         oraz minimalną i maksymalną temperaturę dla każdego z 5 dni.
         """
         super(Forecast, self).__init__()
-        self.title = "5 days forecast"
+        self.title = "5 day forecast"
         self.main_box = BoxLayout(orientation="vertical")
         self.day_box = [BoxLayout(orientation="horizontal") for _ in xrange(5)]
         self.date_label = [Label(markup=True) for _ in xrange(5)]
